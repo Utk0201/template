@@ -1,0 +1,14 @@
+<% layout('layout/boiler') %>
+
+<div class="card mx-auto" style="width: 18rem;">
+    <img class="card-img-top" src="https://www.clipartkey.com/mpngs/m/152-1520367_user-profile-default-image-png-clipart-png-download.png" alt="failed to load">
+    <div class="card-body">
+      <p class="card-text">Name: <%= curUser.oname %> </p>
+      <p class="card-text">Contanct number: <%= curUser.oNo %> </p>
+      <p class="card-text">Email id: <%= curUser.omail %> </p>
+      <p class="card-text">Address: <%= curUser.oAddress %> </p>
+      <form action="/logout" method="post">
+        <button>logout</button>
+      </form>
+    </div>
+</div>

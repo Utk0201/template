@@ -1,0 +1,21 @@
+<% layout('layout/boiler') %>
+
+    <h1 class="mx-5">Login form</h1>
+    <!-- oname = owner name -->
+    <div class="mx-5">
+        <form action="/login" method="post">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="username">Email</label>
+                    <input type="email" class="form-control" id="username" placeholder="Email" name="username" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" placeholder="Set password" name="password" required>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary my-3">Login</button>
+        </form>
+    </div>

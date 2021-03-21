@@ -1,0 +1,119 @@
+<% layout('layout/boiler') %>
+
+    <h1 class="mx-5">Owner form</h1>
+    <!-- oname = owner name -->
+    <div class="mx-5">
+        <form action="/sell" method="post">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="oname">Name</label>
+                    <input type="text" class="form-control" id="oname" placeholder="Full name" name="oname" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" placeholder="Set password" name="password" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="username">Email</label>
+                    <input type="email" class="form-control" id="username" placeholder="Email" name="username" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="oNo">Contact number</label>
+                    <input type="number" class="form-control" id="oNo" placeholder="phone number" name="oNo" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <label for="oAddress">Address</label>
+                <input type="text" class="form-control" id="oAddress" placeholder="1234 Main St" name="oAddress" required>
+            </div>
+            <!-- <div class="form-row">
+                <div class="form-row col-md-6">
+                    <label for="ohType">Type of house(optional)</label>
+                    <select multiple class="form-control" name="ohType" id="ohType">
+                        <option value="apa">Apartment</option>
+                        <option value="dup">Duplex</option>
+                        <option value="man">Manor</option>
+                        <option value="con">Condo</option>
+                        <option value="tow">Townhome</option>
+                        <option value="col">Colonial</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-row col-md-4">
+                    <label for="oprice">Price</label>
+                    <input placeholder="Price for rent(optional)" type="number" id="oprice" class="form-control" name="oprice">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="olift" name="olift">
+                    <label class="form-check-label" for="olift">Is lift available?</label>
+                </div>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="olift" id="olift" value=true>
+                <label class="form-check-label" for="olift">
+                  Is lift enabled?
+                </label>
+            </div> -->
+            <button type="submit" class="btn btn-primary my-3">Add house on rent</button>
+        </form>
+    </div>
+
+
+    <!--
+
+    <h1 class="mx-5">Owner form</h1>
+    <div class="mx-5">
+        <form action="/sell" method="post">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="ow[name]">Name</label>
+                    <input type="text" class="form-control" id="ow[name]" placeholder="Full name" name="ow[name]">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="ow[mail]">Email</label>
+                    <input type="email" class="form-control" id="ow[mail]" placeholder="Email" name="ow[mail]">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="ow[No]">Contact number</label>
+                    <input type="number" class="form-control" id="ow[No]" placeholder="phone number" name="ow[No]">
+                </div>
+            </div>
+            <div class="form-row">
+                <label for="inputAddress">Address</label>
+                <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St">
+            </div>
+            <div class="form-row">
+                <div class="form-row col-md-6">
+                    <label for="ow[hType]">Type of house</label>
+                    <select multiple class="form-control" name="ow[hType]" id="ow[hType]">
+                        <option value="apa">Apartment</option>
+                        <option value="dup">Duplex</option>
+                        <option value="man">Manor</option>
+                        <option value="con">Condo</option>
+                        <option value="tow">Townhome</option>
+                        <option value="col">Colonial</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-row col-md-4">
+                    <label for="ow[price]">Price</label>
+                    <input type="number" id="ow[price]" class="form-control" name="ow[price]">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="ow[lift]" name="ow[lift]">
+                    <label class="form-check-label" for="ow[lift]">Is lift available?</label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary my-3">Add house on rent</button>
+        </form>
+    </div> -->
