@@ -92,30 +92,22 @@ app.get('/secret',(req,res)=>{
 
 /////////////////////////////////////////////post//////////////////////////////////////////////////
 
-app.post('/sell',async (req,res)=>{
-    // res.send(req.body);
-    const aUser= await new User(req.body);
-    console.log(aUser);
-    // await aUser.save();
-    // const id= aUser._id;
-    // console.log(id);
-    // res.redirect(`/user/${id}`);
-    
-    //  to save aUser with req.body.password using https://www.npmjs.com/package/passport-local-mongoose
-    //  modelName.register(object,password)
-    console.log(req.body.password);
-    const regUser= await User.register(aUser,req.body.password,(e)=>{
-        if(e){
-            console.log(e);
-            res.redirect('./sell');
-        }
-        else{
-            console.log(regUser);
-            console.log("successfully registered");
-            res.redirect('/home');
-        }
-    });
-    
+app.post('/sell',async (req,res,next)=>{
+    // const {username,password} = req.body;
+    // const aUser = new User({username,password});
+    const {oname,password,username,oAddress} = req.body;
+    const aUser = new User({oname,password,username,oAddress});
+    const regUser= await User.register(aUser,password);
+    // Passport exposes a login() function on req (also aliased as logIn()) that can be used to establish a login session.
+    req.login(regUser,e=>{
+        if(e) return next(e);
+        // res.redirect(`/user/${aUser._id}`);
+        // console.log(regUser);
+        // console.log(aUser._id);
+        res.redirect(`/user/${aUser._id}`);
+    })
+    // console.log(regUser);
+    // res.redirect('/home');
 })
 
 
