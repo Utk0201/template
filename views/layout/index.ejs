@@ -26,14 +26,15 @@
               <li class="nav-item">
                 <a class="nav-link" href="/look">Search for a house</a>
               </li>
+              <% if(!loginUser){ %> 
               <li class="nav-item">
                 <a class="nav-link" href="/login">Login</a>
               </li>
-
-               <!-- <form action="/logout" method="post">
-               <button>Logout</button>
-               </form> -->
-
+              <% }else{ %> 
+              <li class="nav-item">
+                <a class="nav-link" href="/logout">Logout</a>
+              </li>
+              <% } %> 
             <!-- <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Dropdown

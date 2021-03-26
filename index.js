@@ -1,7 +1,7 @@
 const express=require('express');
 const app=express();
 const path=require('path');
-const ejsMate= require('ejs-mate')
+const ejsMate= require('ejs-mate')  //  to use layout feature
 const bodyParser= require('body-parser');   /* parse info from forms */
 const mongoose= require('mongoose');
 const passport = require('passport');
@@ -45,8 +45,15 @@ passport.use(new passportLocal(User.authenticate()));
 // use static serialize and deserialize of model for passport session support
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
+app.use((req,res,next)=>{
+    res.locals.loginUser=req.user;
+    next();
+})
 /////////////////////////////////////////////get//////////////////////////////////////////////////
 app.get('/home',(req,res)=>{
+    if(req.isAuthenticated()){
+        console.log("You are logged in");
+    }
     res.render('layout/index');
 })
 
@@ -56,6 +63,14 @@ app.get('/user',(req,res)=>{
 
 app.get('/login',(req,res)=>{
     res.render('forms/loginForm');
+})
+
+app.get('/logout',(req,res)=>{
+    // passport exposes a logout() function on req (also aliased as logOut()) that can be called from any route 
+    // handler which needs to terminate a login session. Invoking logout() will remove the req.user property and clear the login session (if any).
+    req.logout();
+    console.log(req.session);
+    res.redirect('/home');
 })
 
 app.get('/user/:id',async (req,res)=>{
@@ -107,7 +122,7 @@ app.post('/sell',async (req,res,next)=>{
         res.redirect(`/user/${aUser._id}`);
     })
     // console.log(regUser);
-    // res.redirect('/home');
+    res.redirect('/home');
 })
 
 
@@ -120,14 +135,6 @@ app.post('/login', passport.authenticate('local', { failureRedirect: '/login' })
     res.redirect(`/user/${curUser[0]._id}`)
     // res.redirect(`/user/60509e85711bae3b9429b709`)
 });
-
-app.post('/logout',(req,res)=>{
-    // passport exposes a logout() function on req (also aliased as logOut()) that can be called from any route 
-    // handler which needs to terminate a login session. Invoking logout() will remove the req.user property and clear the login session (if any).
-    req.logout();
-    console.log(req.session);
-    res.redirect('/home');
-})
 
 /////////////////////////////////////////////post//////////////////////////////////////////////////
 app.get('/',(req,res)=>{

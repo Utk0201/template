@@ -16,9 +16,18 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-      
+        
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto">
+            <% if(!loginUser){ %> 
+              <li class="nav-item">
+                <a class="nav-link" href="/login">Login</a>
+              </li>
+              <% }else{ %> 
+              <li class="nav-item">
+                <a class="nav-link" href="/logout">Logout</a>
+              </li>
+              <% } %> 
             <!-- <li class="nav-item">
               <a class="nav-link" href="/look">Logout</a>
             </li> -->
