@@ -10,3 +10,4 @@ This template is currently under development. It will serve as template for a se
 ## Future improvements
 * Refractoring code
 * Improving user interface
+* Video chat functionality between user-buyer
