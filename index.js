@@ -8,7 +8,7 @@ const passport = require('passport');
 const passportLocal = require('passport-local');
 const session = require('express-session')  //  for persistent login
 const User = require('./models/user.js');
-
+const methodOverride = require('method-override');
 
 mongoose.connect('mongodb://localhost:27017/houseApp', {useNewUrlParser: true, useUnifiedTopology: true})
 .then(()=>{
@@ -46,11 +46,13 @@ passport.use(new passportLocal(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 app.use((req,res,next)=>{
-    res.locals.loginUser=req.user;
+    res.locals.loginUser=req.user;  //  allows the variable loginUser to be accessible everywhere
     next();
 })
+app.use(methodOverride('_method'));
 /////////////////////////////////////////////get//////////////////////////////////////////////////
 app.get('/home',(req,res)=>{
+    // console.log(req.user+' is the current user');
     if(req.isAuthenticated()){
         console.log("You are logged in");
     }
@@ -58,11 +60,11 @@ app.get('/home',(req,res)=>{
 })
 
 app.get('/user',(req,res)=>{
-    res.render('forms/userForm');   //  for people who want to rent a house
+    res.render('forms/regUser');   //  for people who want to rent a house
 })
 
 app.get('/login',(req,res)=>{
-    res.render('forms/loginForm');
+    res.render('forms/loginUser');
 })
 
 app.get('/logout',(req,res)=>{
@@ -73,10 +75,21 @@ app.get('/logout',(req,res)=>{
     res.redirect('/home');
 })
 
+app.get('/user/:id/edit',(req,res)=>{
+    // res.send(`At ${req.params.id}`);
+    if(req.isAuthenticated()){
+        res.render('forms/editUser');   //  edit details of the user having this id
+    }
+    else{
+        res.redirect('/home');
+    }
+})
+
 app.get('/user/:id',async (req,res)=>{
     if(req.isAuthenticated()){
         const {id}= req.params;
         const curUser = await User.findById(id);
+        // console.log(res.locals.loginUser+' is the current user');
         res.render('info/user',{curUser});
     }
     else{
@@ -87,7 +100,7 @@ app.get('/user/:id',async (req,res)=>{
 })
 
 app.get('/sell',(req,res)=>{
-    res.render('forms/sellForm');   //  for people who want to sell a house on rent
+    res.render('forms/regUser');   //  for people who want to sell a house on rent
 })
 
 app.get('/look',(req,res)=>{
@@ -110,8 +123,8 @@ app.get('/secret',(req,res)=>{
 app.post('/sell',async (req,res,next)=>{
     // const {username,password} = req.body;
     // const aUser = new User({username,password});
-    const {oname,password,username,oAddress} = req.body;
-    const aUser = new User({oname,password,username,oAddress});
+    const {oname,oNo,password,username,oAddress} = req.body;
+    const aUser = new User({oname,oNo,password,username,oAddress});
     const regUser= await User.register(aUser,password);
     // Passport exposes a login() function on req (also aliased as logIn()) that can be used to establish a login session.
     req.login(regUser,e=>{
@@ -121,6 +134,7 @@ app.post('/sell',async (req,res,next)=>{
         // console.log(aUser._id);
         res.redirect(`/user/${aUser._id}`);
     })
+    
     // console.log(regUser);
     res.redirect('/home');
 })
@@ -128,6 +142,7 @@ app.post('/sell',async (req,res,next)=>{
 
 // Passport provides an authenticate() function, which is used as route middleware to authenticate requests.
 app.post('/login', passport.authenticate('local', { failureRedirect: '/login' }),async (req, res)=>{
+    // console.log(req.user+' is the current user');
     const curUser= await User.find({username:req.body.username});   //  returns an array of objects which are matching the condition
     console.log(curUser);
     console.log(req.session);
@@ -137,6 +152,25 @@ app.post('/login', passport.authenticate('local', { failureRedirect: '/login' })
 });
 
 /////////////////////////////////////////////post//////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////put//////////////////////////////////////////////////
+app.put('/user/:id',async (req,res)=>{
+    // res.send('working atleast!!');
+    const {id}= req.params;
+    const {oname,oNo,oAddress}=req.body;
+    const updUser=await User.findByIdAndUpdate(id,{oname,oNo,oAddress});
+    res.redirect(`/user/${updUser._id}`);
+})
+/////////////////////////////////////////////put//////////////////////////////////////////////////
+
+/////////////////////////////////////////////delete//////////////////////////////////////////////////
+app.delete('/user/:id',async (req,res)=>{
+    const {id} = req.params;
+    await User.findByIdAndDelete(id);
+    res.redirect('/home');
+})
+/////////////////////////////////////////////delete//////////////////////////////////////////////////
 app.get('/',(req,res)=>{
     res.send("Welcome to house rent app");
 })

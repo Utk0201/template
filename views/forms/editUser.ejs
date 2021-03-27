@@ -1,0 +1,25 @@
+<% layout('layout/boiler') -%>
+<h1 class="mx-5">Owner form</h1>
+    <!-- oname = owner name -->
+    <div class="mx-5">
+        <form action="/user/<%=loginUser._id%>?_method=put" method="post">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="oname">Name</label>
+                    <input value="<%=loginUser.oname%>" type="text" class="form-control" id="oname" placeholder="Full name" name="oname" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="oNo">Contact number</label>
+                    <input   value="<%=loginUser.oNo%>" type="number" class="form-control" id="oNo" placeholder="phone number" name="oNo" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <label for="oAddress">Address</label>
+                <input  value="<%=loginUser.oAddress%>" type="text" class="form-control" id="oAddress" placeholder="1234 Main St" name="oAddress" required>
+            </div>
+            <button type="submit" class="btn btn-primary my-3">Edit your details</button>
+        </form>
+    </div>
+

@@ -5,7 +5,19 @@
     <div class="card-body">
       <p class="card-text">Name: <%= curUser.oname %> </p>
       <p class="card-text">Contanct number: <%= curUser.oNo %> </p>
-      <p class="card-text">Email id: <%= curUser.omail %> </p>
+      <p class="card-text">Email id: <%= curUser.username %> </p>
       <p class="card-text">Address: <%= curUser.oAddress %> </p>
+      <!-- <a class="btn btn-success" href="/addHouse" role="button">Add House</a>
+      <a class="btn btn-success" href="/addHouse" role="button">View All Houses</a> -->
+      <div class="row">
+        <div class="col-md-6">
+        <a class="btn btn-warning" href="/user/<%=curUser._id%>/edit" role="button">Edit user details</a>
+        </div>
+        <div class="col-md-6">
+          <form action="/user/<%=loginUser._id%>?_method=delete" method="POST">
+            <button class="btn btn-danger">Delete User</button>
+          </form>
+        </div>
+      </div>
     </div>
 </div>
