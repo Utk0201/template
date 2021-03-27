@@ -1,4 +1,4 @@
-# houseRentApp
+# Template
 This template is currently under development. It will serve as template for a series of apps that will be developed for general purpose.
 
 ## Current features
