@@ -4,7 +4,7 @@
     <img class="card-img-top" src="https://www.clipartkey.com/mpngs/m/152-1520367_user-profile-default-image-png-clipart-png-download.png" alt="failed to load">
     <div class="card-body">
       <p class="card-text">Name: <%= curUser.oname %> </p>
-      <p class="card-text">Contanct number: <%= curUser.oNo %> </p>
+      <p class="card-text">Contact number: <%= curUser.oNo %> </p>
       <p class="card-text">Email id: <%= curUser.username %> </p>
       <p class="card-text">Address: <%= curUser.oAddress %> </p>
       <!-- <a class="btn btn-success" href="/addHouse" role="button">Add House</a>
@@ -16,6 +16,16 @@
         <div class="col-md-6">
           <form action="/user/<%=loginUser._id%>?_method=delete" method="POST">
             <button class="btn btn-danger">Delete User</button>
+          </form>
+        </div>
+        <div class="col-md-6">
+          <form action="/user/<%=loginUser._id%>/add">
+            <button class="btn btn-success">Add home</button>
+          </form>
+        </div>
+        <div class="col-md-6">
+          <form action="/user/<%=loginUser._id%>/houses">
+            <button class="btn btn-primary">See houses</button>
           </form>
         </div>
       </div>

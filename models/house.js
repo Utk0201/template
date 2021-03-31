@@ -1,15 +1,15 @@
 //  to use mongoose, we have to require mongoose and declare Schema
-
 const mongoose = require('mongoose');
-
+const User=require('./user.js');
 const {Schema} = mongoose;
 
 const houseSchema = new Schema({
     desc: String,   // stores description of the house
-    type: String,
+    categ: String,
     price: Number,
-    lift: Boolean
-})
+    location: String,
+    owner:{type:Schema.Types.ObjectId,ref:'User'}
+});
 
 //  make a model and export
 module.exports = mongoose.model('House',houseSchema);

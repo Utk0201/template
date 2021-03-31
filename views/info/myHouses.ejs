@@ -1,0 +1,32 @@
+<% layout('/layout/boiler') -%>
+    <div class="col-md-6 my-3 mx-5">
+        <a class="btn btn-primary" href="/user/<%=curUser._id%>" role="button">Go back</a>
+    </div>
+    <% for(house of curUser.houses){ %>
+        <div class="col-md-6 mt-5 mx-5">
+            <div class="card" style="width: 18rem;">
+                <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
+                <div class="card-body">
+                    <h5 class="card-title">Category:<%=house.categ%>
+                    </h5>
+                    <p class="card-text">Price: ₹<%=house.price%>
+                    </p>
+                    <p class="card-text">Description:<%=house.desc%>
+                    </p>
+                    <p class="card-text">Location:<%=house.location%>
+                    </p>
+                    <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
+
+                        <form action="/user/<%=loginUser._id%>/houses/<%=house._id%>">
+                            <button class="btn btn-warning">Edit house</button>
+                        </form>
+
+
+                        <form action="/user/<%=loginUser._id%>/houses/<%=house._id%>?_method=delete" method="post">
+                            <button class="btn btn-danger">Delete house</button>
+                        </form>
+
+                </div>
+            </div>
+        </div>
+        <% } %>
