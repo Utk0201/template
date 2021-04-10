@@ -165,7 +165,6 @@ app.get('/secret', (req, res) => {
 /////////////////////////////////////////////get//////////////////////////////////////////////////
 
 /////////////////////////////////////////////post//////////////////////////////////////////////////
-
 app.post('/sell', upload.single('img'),async (req, res, next) => { 
     //  uploading single file
     // console.log(req.file);
@@ -216,13 +215,25 @@ app.post('/login', passport.authenticate('local', { failureRedirect: '/login' })
 
 
 /////////////////////////////////////////////put//////////////////////////////////////////////////
+app.put('/del/:id',async (req,res)=>{
+    const {id}= req.params;
+    const aUser=await User.findById(id);
+    const { oname, oNo, oAddress, password, username }=aUser;
+    const profile={url:"https://res.cloudinary.com/dnkbv2p12/image/upload/v1618080804/userDp/oy6iov22qrlvue1lxs72.png",filename:"userDp/oy6iov22qrlvue1lxs72"};
+    const nUser=await User.findByIdAndUpdate(id,{ oname, oNo, oAddress, password, username,profile});
+    console.log(aUser);
+    res.redirect(`/user/${id}`);
+})
+
 app.put('/user/:id',upload.single('img'),async (req, res) => {
     // res.send('working atleast!!');
     if (req.isAuthenticated()) {
         const { id } = req.params;
         const { oname, oNo, oAddress} = req.body;
+        const prevUser=await User.findById(id);
         var profile;
         if(req.file) profile={url:req.file.path,filename:req.file.filename};
+        else profile = prevUser.profile;
         const updUser = await User.findByIdAndUpdate(id, { oname, oNo, oAddress,profile});
         res.redirect(`/user/${updUser._id}`);
     }

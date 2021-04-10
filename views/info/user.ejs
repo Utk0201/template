@@ -2,6 +2,11 @@
 
 <div class="card mx-auto" style="width: 18rem;">
     <img class="card-img-top" src=<%= curUser.profile.url?curUser.profile.url:"https://www.clipartkey.com/mpngs/m/152-1520367_user-profile-default-image-png-clipart-png-download.png"%> alt="failed to load">
+    <div class="mx-auto my-2">
+      <form action="/del/<%=curUser._id%>?_method=put" method="POST">
+        <button class="btn btn-danger">Delete profile pic</button>
+      </form>
+    </div>
     <div class="card-body">
       <p class="card-text">Name: <%= curUser.oname %> </p>
       <p class="card-text">Contact number: <%= curUser.oNo %> </p>
