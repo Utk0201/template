@@ -2,12 +2,16 @@
 <h1 class="mx-5">Owner form</h1>
     <!-- oname = owner name -->
     <div class="mx-5">
-        <form action="/user/<%=loginUser._id%>?_method=put" method="post">
+        <form action="/user/<%=loginUser._id%>?_method=put" method="post" enctype="multipart/form-data">
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="oname">Name</label>
                     <input value="<%=loginUser.oname%>" type="text" class="form-control" id="oname" placeholder="Full name" name="oname" required>
                 </div>
+            </div>            
+            <div class="form-group">
+                <label for="img">Change your profile pic</label>
+                <input type="file" class="form-control-file" id="img" name="img">
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">

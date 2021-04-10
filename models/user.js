@@ -10,7 +10,11 @@ const userSchema = new Schema({
         username: String,       //      this should be unique for every user
         oNo: Number,
         oAddress: String,
-        houses:[{type:Schema.Types.ObjectId,ref:'House'}]
+        houses:[{type:Schema.Types.ObjectId,ref:'House'}],
+        profile:{
+                url:String,
+                filename:String
+        }
 });
 
 userSchema.plugin(localMongoose);

@@ -1,3 +1,7 @@
+if(process.env.NODE_ENV!=="production"){
+    require('dotenv').config(); //  brings key-value pairs of .env file in process.env variable that can be accessed globally
+}
+
 const express = require('express');
 const app = express();
 const path = require('path');
@@ -10,6 +14,10 @@ const session = require('express-session')  //  for persistent login
 const User = require('./models/user.js');   //  schema of owner
 const House = require('./models/house.js');   //  schema of house
 const methodOverride = require('method-override');
+const multer=require('multer'); //  fills a method 'file' or 'files' in req.body after it has been initialized
+//  to initialize multer, we write the following line
+const {storage} = require('./cloudinary/cloud');
+var upload = multer({storage});
 
 mongoose.connect('mongodb://localhost:27017/houseApp', { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
@@ -158,24 +166,27 @@ app.get('/secret', (req, res) => {
 
 /////////////////////////////////////////////post//////////////////////////////////////////////////
 
-app.post('/sell', async (req, res, next) => {
+app.post('/sell', upload.single('img'),async (req, res, next) => { 
+    //  uploading single file
+    // console.log(req.file);
+    // res.send("working fine");
     // const {username,password} = req.body;
     // const aUser = new User({username,password});
     const { oname, oNo, oAddress, password, username } = req.body;
     const aUser = new User({ oname, oNo, password, username, oAddress });
+    if(req.file) aUser.profile={url:req.file.path,filename:req.file.filename};
+    console.log(aUser);
+    // res.send('Wait !!');
     const regUser = await User.register(aUser, password);
     // Passport exposes a login() function on req (also aliased as logIn()) that can be used to establish a login session.
     req.login(regUser, e => {
         if (e) return next(e);
-        // res.redirect(`/user/${aUser._id}`);
-        // console.log(regUser);
-        // console.log(aUser._id);
         res.redirect(`/user/${aUser._id}`);
     })
 
-    // console.log(regUser);
+    console.log(regUser);
     res.redirect('/home');
-})
+});
 
 app.post('/user/:id/addHouse', async (req, res) => {
     // res.send(req.body);
@@ -205,12 +216,14 @@ app.post('/login', passport.authenticate('local', { failureRedirect: '/login' })
 
 
 /////////////////////////////////////////////put//////////////////////////////////////////////////
-app.put('/user/:id', async (req, res) => {
+app.put('/user/:id',upload.single('img'),async (req, res) => {
     // res.send('working atleast!!');
     if (req.isAuthenticated()) {
         const { id } = req.params;
-        const { oname, oNo, oAddress } = req.body;
-        const updUser = await User.findByIdAndUpdate(id, { oname, oNo, oAddress });
+        const { oname, oNo, oAddress} = req.body;
+        var profile;
+        if(req.file) profile={url:req.file.path,filename:req.file.filename};
+        const updUser = await User.findByIdAndUpdate(id, { oname, oNo, oAddress,profile});
         res.redirect(`/user/${updUser._id}`);
     }
     else {
