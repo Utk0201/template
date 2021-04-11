@@ -43,7 +43,7 @@ app.use(session({
     saveUninitialized: true,
     resave: false,
     cookie: {
-        maxAge: 1000 * 60 * 5   //  auto. logout after 5 min
+        maxAge: 1000 * 60 * 330   //  auto. logout after 59 min
     }
 }));
 //  set up passport for express or connect based application (express in our case) https://www.npmjs.com/package/passport
@@ -187,19 +187,25 @@ app.post('/sell', upload.single('img'),async (req, res, next) => {
     res.redirect('/home');
 });
 
-app.post('/user/:id/addHouse', async (req, res) => {
-    // res.send(req.body);
-    const { desc, categ, price, location } = req.body;
+app.post('/user/:id/addHouse',upload.array('hImage'), async (req, res) => {
+    // res.send('wait');
+    // console.log(req.body);
+    console.log(req.files);
+    const { desc, categ, price, location} = req.body;
+    // res.send("Wait");
+    const pics= req.files.map(f=>({url:f.path,filename:f.filename}));
     const oId = req.params.id;
     const aHouse = new House({ desc, categ, price, location });
+    aHouse.pics = pics;
     aHouse.owner = oId;
     const user = await User.findById(oId);
     user.houses.push(aHouse._id);
     await user.save();
     await aHouse.save();
+    console.log(aHouse);
     res.redirect(`/user/${user._id}/houses`);
     // res.send(user);
-})
+});
 
 // Passport provides an authenticate() function, which is used as route middleware to authenticate requests.
 app.post('/login', passport.authenticate('local', { failureRedirect: '/login' }), async (req, res) => {
@@ -223,7 +229,7 @@ app.put('/del/:id',async (req,res)=>{
     const nUser=await User.findByIdAndUpdate(id,{ oname, oNo, oAddress, password, username,profile});
     console.log(aUser);
     res.redirect(`/user/${id}`);
-})
+});
 
 app.put('/user/:id',upload.single('img'),async (req, res) => {
     // res.send('working atleast!!');
@@ -240,7 +246,7 @@ app.put('/user/:id',upload.single('img'),async (req, res) => {
     else {
         res.redirect('/login');
     }
-})
+});
 
 app.put('/user/:id/houses/:houseId', async (req, res) => {
     if (req.isAuthenticated()) {

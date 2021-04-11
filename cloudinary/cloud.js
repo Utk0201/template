@@ -10,7 +10,7 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
-      folder: 'userDp',
+      folder: 'rentApp',
       allowed_formats:['jpg','jpeg','png']
     //   format: async (req, file) => 'png', // supports promises as well
     //   public_id: (req, file) => 'computed-filename-using-request',

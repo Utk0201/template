@@ -7,6 +7,25 @@
             <div class="card" style="width: 18rem;">
                 <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
                 <div class="card-body">
+                    <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner">
+                        <% for(let i=0;i<house.pics.length;i++){ %>
+                            <div class="carousel-item <%= i==0?'active':'' %>">
+                                <img class="d-block w-10" src="<%= house.pics[i].url %>" alt="First slide">
+                              </div>
+                        <% } %>  
+                        </div>
+                        <%if(house.pics.length>1){%>
+                                                    <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+                          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                          <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+                          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                          <span class="sr-only">Next</span>
+                        </a>
+                        <% } %> 
+                    </div>
                     <h5 class="card-title">Category:<%=house.categ%>
                     </h5>
                     <p class="card-text">Price: ₹<%=house.price%>
@@ -17,14 +36,14 @@
                     </p>
                     <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
 
-                        <form action="/user/<%=loginUser._id%>/houses/<%=house._id%>">
-                            <button class="btn btn-warning">Edit house</button>
-                        </form>
+                    <form action="/user/<%=loginUser._id%>/houses/<%=house._id%>">
+                        <button class="btn btn-warning">Edit house</button>
+                    </form>
 
 
-                        <form action="/user/<%=loginUser._id%>/houses/<%=house._id%>?_method=delete" method="post">
-                            <button class="btn btn-danger">Delete house</button>
-                        </form>
+                    <form action="/user/<%=loginUser._id%>/houses/<%=house._id%>?_method=delete" method="post">
+                        <button class="btn btn-danger">Delete house</button>
+                    </form>
 
                 </div>
             </div>

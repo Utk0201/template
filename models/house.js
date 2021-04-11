@@ -8,7 +8,13 @@ const houseSchema = new Schema({
     categ: String,
     price: Number,
     location: String,
-    owner:{type:Schema.Types.ObjectId,ref:'User'}
+    owner:{type:Schema.Types.ObjectId,ref:'User'},
+    pics:[
+        {
+            url:String,
+            filename:String
+        }
+    ]
 });
 
 //  make a model and export
