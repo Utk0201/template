@@ -47,7 +47,7 @@ app.use(session({
     saveUninitialized: true,
     resave: false,
     cookie: {
-        maxAge: 1000 * 60 * 330   //  auto. logout after 59 min
+        maxAge: 1000 * 60 * 60   //  auto. logout after 60 min
     }
 }));
 //  set up passport for express or connect based application (express in our case) https://www.npmjs.com/package/passport

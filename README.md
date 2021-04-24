@@ -8,11 +8,11 @@ This template is currently under development. It will serve as template for a se
 * Data saved locally
 * Session expires automatically after 5 minutes (time can be changed from index.js)
 * User can add/edit/delete his/her profile pic
-* User can add the pic(s) of their house
+* User can add as well as delete the pic(s) of their house
+* carousel images' size adjusted
 
 ## Future improvements
-* Adjust images' dimension in carousel
-* enable edit/delete feature for images of the houses
+* Enable deleting dp pics of user from cloudinary folder 
 * Refractoring code
 * Improving user interface
 * Showing location of the rented house on map 
