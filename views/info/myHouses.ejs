@@ -4,14 +4,14 @@
     </div>
     <% for(house of curUser.houses){ %>
         <div class="col-md-6 mt-5 mx-5">
-            <div class="card" style="width: 18rem;">
+            <div class="card" style="width: 36rem;">
                 <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
                 <div class="card-body">
                     <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
                         <div class="carousel-inner">
                         <% for(let i=0;i<house.pics.length;i++){ %>
                             <div class="carousel-item <%= i==0?'active':'' %>">
-                                <img class="d-block w-10" src="<%= house.pics[i].url %>" alt="First slide">
+                                <img height="400" width="600" src="<%= house.pics[i].url %>" alt="First slide">
                               </div>
                         <% } %>  
                         </div>

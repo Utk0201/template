@@ -6,7 +6,8 @@
 <h1 class="mx-5">Edit form</h1>
 <!-- oname = owner name -->
 <div class="mx-5">
-    <form action="/user/<%=ownerId%>/houses/<%=curHouse._id%>?_method=put" method="post">
+    <form action="/user/<%=ownerId%>/houses/<%=curHouse._id%>?_method=put" method="post" enctype="multipart/form-data">
+        <!-- enctype added to upload files -->
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label for="categ">Choose the type of your house</label>
@@ -33,6 +34,21 @@
                 <label for="desc">Add description</label>
                 <input type="text" class="form-control" id="desc" value="<%=curHouse.desc%>" name="desc" required>
             </div>
+        </div>
+        <div class="mb-3">
+            <label for="form-label" for="image">Add images</label>
+            <input type="file" name="image" id="image" multiple>
+        </div>
+        <div class="mb-3">
+            <% for(var i=0;i<curHouse.pics.length;i++){ %>
+                <div class="mb-3">
+                    <img width=300 height=300 src="<%= curHouse.pics[i].url%>" alt="Can't find image">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="h<%=i%>" name="deleteImages[]" value ="<%=curHouse.pics[i].filename%>">
+                        <label class="form-check-label" for="h<%=i%>">Delete image <%=i+1%></label>
+                    </div>
+                </div>
+            <% } %>  
         </div>
         <button type="submit" class="btn btn-primary my-3">Update changes</button>
     </form>

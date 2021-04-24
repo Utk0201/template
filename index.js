@@ -25,7 +25,11 @@ mongoose.connect('mongodb://localhost:27017/houseApp', { useNewUrlParser: true, 
     })
     .catch(e => {
         console.log(e);
-    })
+    });
+    mongoose.set('useNewUrlParser', true);
+    mongoose.set('useFindAndModify', false);
+    mongoose.set('useCreateIndex', true);
+    mongoose.set('useUnifiedTopology', true);
 
 // View Engine Setup 
 app.engine('ejs', ejsMate)  // provides "layout" feature 
@@ -56,6 +60,7 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 app.use((req, res, next) => {
     res.locals.loginUser = req.user;  //  allows the variable loginUser to be accessible everywhere
+    // console.log(`res.locals containes ${req.user}`);
     next();
 })
 app.use(methodOverride('_method'));
@@ -190,7 +195,7 @@ app.post('/sell', upload.single('img'),async (req, res, next) => {
 app.post('/user/:id/addHouse',upload.array('hImage'), async (req, res) => {
     // res.send('wait');
     // console.log(req.body);
-    console.log(req.files);
+    console.log(req.files); 
     const { desc, categ, price, location} = req.body;
     // res.send("Wait");
     const pics= req.files.map(f=>({url:f.path,filename:f.filename}));
@@ -248,11 +253,22 @@ app.put('/user/:id',upload.single('img'),async (req, res) => {
     }
 });
 
-app.put('/user/:id/houses/:houseId', async (req, res) => {
+app.put('/user/:id/houses/:houseId',upload.array('image'), async (req, res) => {
     if (req.isAuthenticated()) {
         const { categ, price, location, desc } = req.body;
         const { houseId, id } = req.params;
         const updHouse = await House.findByIdAndUpdate(houseId, { categ, price, location, desc });
+        // updHouse.pics.push(req.files.map(f=>({url:f.path,filename:f.filename})));  
+        //  if we run above line, then we're pushing an entire array in 'pics'
+        //  but the type of 'pics' is 'object' and not 'array' as specified in the model
+        //  So, instead of pushing that array, we extract its object using spread operator '...'
+        const addedImages = req.files.map(f=>({url:f.path,filename:f.filename}));
+        updHouse.pics.push(...addedImages); //   
+        await updHouse.save();  //  save above changes
+        //delete images
+        if(req.body.deleteImages){
+            await updHouse.updateOne({$pull: {pics:{filename:{$in: req.body.deleteImages}}}});
+        }
         res.redirect(`/user/${id}/houses`);
     }
     else {
