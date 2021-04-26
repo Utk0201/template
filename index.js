@@ -1,4 +1,4 @@
-if(process.env.NODE_ENV!=="production"){
+if (process.env.NODE_ENV !== "production") {
     require('dotenv').config(); //  brings key-value pairs of .env file in process.env variable that can be accessed globally
 }
 
@@ -14,10 +14,10 @@ const session = require('express-session')  //  for persistent login
 const User = require('./models/user.js');   //  schema of owner
 const House = require('./models/house.js');   //  schema of house
 const methodOverride = require('method-override');
-const multer=require('multer'); //  fills a method 'file' or 'files' in req.body after it has been initialized
+const multer = require('multer'); //  fills a method 'file' or 'files' in req.body after it has been initialized
 //  to initialize multer, we write the following line
-const {storage} = require('./cloudinary/cloud');
-var upload = multer({storage});
+const { storage, cloudinary } = require('./cloudinary/cloud');
+var upload = multer({ storage });
 
 mongoose.connect('mongodb://localhost:27017/houseApp', { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
@@ -26,10 +26,10 @@ mongoose.connect('mongodb://localhost:27017/houseApp', { useNewUrlParser: true, 
     .catch(e => {
         console.log(e);
     });
-    mongoose.set('useNewUrlParser', true);
-    mongoose.set('useFindAndModify', false);
-    mongoose.set('useCreateIndex', true);
-    mongoose.set('useUnifiedTopology', true);
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+mongoose.set('useUnifiedTopology', true);
 
 // View Engine Setup 
 app.engine('ejs', ejsMate)  // provides "layout" feature 
@@ -170,7 +170,7 @@ app.get('/secret', (req, res) => {
 /////////////////////////////////////////////get//////////////////////////////////////////////////
 
 /////////////////////////////////////////////post//////////////////////////////////////////////////
-app.post('/sell', upload.single('img'),async (req, res, next) => { 
+app.post('/sell', upload.single('img'), async (req, res, next) => {
     //  uploading single file
     // console.log(req.file);
     // res.send("working fine");
@@ -178,7 +178,7 @@ app.post('/sell', upload.single('img'),async (req, res, next) => {
     // const aUser = new User({username,password});
     const { oname, oNo, oAddress, password, username } = req.body;
     const aUser = new User({ oname, oNo, password, username, oAddress });
-    if(req.file) aUser.profile={url:req.file.path,filename:req.file.filename};
+    if (req.file) aUser.profile = { url: req.file.path, filename: req.file.filename };
     console.log(aUser);
     // res.send('Wait !!');
     const regUser = await User.register(aUser, password);
@@ -192,13 +192,13 @@ app.post('/sell', upload.single('img'),async (req, res, next) => {
     res.redirect('/home');
 });
 
-app.post('/user/:id/addHouse',upload.array('hImage'), async (req, res) => {
+app.post('/user/:id/addHouse', upload.array('hImage'), async (req, res) => {
     // res.send('wait');
     // console.log(req.body);
-    console.log(req.files); 
-    const { desc, categ, price, location} = req.body;
+    console.log(req.files);
+    const { desc, categ, price, location } = req.body;
     // res.send("Wait");
-    const pics= req.files.map(f=>({url:f.path,filename:f.filename}));
+    const pics = req.files.map(f => ({ url: f.path, filename: f.filename }));
     const oId = req.params.id;
     const aHouse = new House({ desc, categ, price, location });
     aHouse.pics = pics;
@@ -226,26 +226,27 @@ app.post('/login', passport.authenticate('local', { failureRedirect: '/login' })
 
 
 /////////////////////////////////////////////put//////////////////////////////////////////////////
-app.put('/del/:id',async (req,res)=>{
-    const {id}= req.params;
-    const aUser=await User.findById(id);
-    const { oname, oNo, oAddress, password, username }=aUser;
-    const profile={url:"https://res.cloudinary.com/dnkbv2p12/image/upload/v1618080804/userDp/oy6iov22qrlvue1lxs72.png",filename:"userDp/oy6iov22qrlvue1lxs72"};
-    const nUser=await User.findByIdAndUpdate(id,{ oname, oNo, oAddress, password, username,profile});
-    console.log(aUser);
+app.put('/del/:id', async (req, res) => {
+    const { id } = req.params;
+    const aUser = await User.findById(id);
+    cloudinary.uploader.destroy(aUser.profile.filename);
+    const { oname, oNo, oAddress, password, username } = aUser;
+    const profile = { url: "https://res.cloudinary.com/dnkbv2p12/image/upload/v1618080804/userDp/oy6iov22qrlvue1lxs72.png", filename: "userDp/oy6iov22qrlvue1lxs72" };
+    const nUser = await User.findByIdAndUpdate(id, { oname, oNo, oAddress, password, username, profile });
+    console.log(nUser);
     res.redirect(`/user/${id}`);
 });
 
-app.put('/user/:id',upload.single('img'),async (req, res) => {
+app.put('/user/:id', upload.single('img'), async (req, res) => {
     // res.send('working atleast!!');
     if (req.isAuthenticated()) {
         const { id } = req.params;
-        const { oname, oNo, oAddress} = req.body;
-        const prevUser=await User.findById(id);
+        const { oname, oNo, oAddress } = req.body;
+        const prevUser = await User.findById(id);
         var profile;
-        if(req.file) profile={url:req.file.path,filename:req.file.filename};
+        if (req.file) profile = { url: req.file.path, filename: req.file.filename };
         else profile = prevUser.profile;
-        const updUser = await User.findByIdAndUpdate(id, { oname, oNo, oAddress,profile});
+        const updUser = await User.findByIdAndUpdate(id, { oname, oNo, oAddress, profile });
         res.redirect(`/user/${updUser._id}`);
     }
     else {
@@ -253,22 +254,34 @@ app.put('/user/:id',upload.single('img'),async (req, res) => {
     }
 });
 
-app.put('/user/:id/houses/:houseId',upload.array('image'), async (req, res) => {
+app.put('/user/:id/houses/:houseId', upload.array('image'), async (req, res) => {
     if (req.isAuthenticated()) {
         const { categ, price, location, desc } = req.body;
         const { houseId, id } = req.params;
         const updHouse = await House.findByIdAndUpdate(houseId, { categ, price, location, desc });
+        console.log(updHouse);
         // updHouse.pics.push(req.files.map(f=>({url:f.path,filename:f.filename})));  
         //  if we run above line, then we're pushing an entire array in 'pics'
         //  but the type of 'pics' is 'object' and not 'array' as specified in the model
         //  So, instead of pushing that array, we extract its object using spread operator '...'
-        const addedImages = req.files.map(f=>({url:f.path,filename:f.filename}));
-        updHouse.pics.push(...addedImages); //   
-        await updHouse.save();  //  save above changes
-        //delete images
-        if(req.body.deleteImages){
-            await updHouse.updateOne({$pull: {pics:{filename:{$in: req.body.deleteImages}}}});
+        const addedImages = req.files.map(f => ({ url: f.path, filename: f.filename }));
+        if (updHouse.pics.length && updHouse.pics[0].filename === "rentApp/def_ekgruc") {
+            updHouse.pics.pop();
         }
+        updHouse.pics.push(...addedImages); //   
+        // await updHouse.save();  //  save above changes
+        //delete images
+        if (req.body.deleteImages) {
+            for (let filename of req.body.deleteImages) {
+                cloudinary.uploader.destroy(filename);
+            }
+            await updHouse.updateOne({ $pull: { pics: { filename: { $in: req.body.deleteImages } } } });
+            if (updHouse.pics.length <= 1) {
+                updHouse.pics.push({ url: "https://res.cloudinary.com/dnkbv2p12/image/upload/v1619443374/rentApp/def_ekgruc.jpg", filename: "rentApp/def_ekgruc" });
+            }
+            console.log("After deleting images:", updHouse);
+        }
+        await updHouse.save();
         res.redirect(`/user/${id}/houses`);
     }
     else {

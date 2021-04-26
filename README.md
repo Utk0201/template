@@ -10,6 +10,8 @@ This template is currently under development. It will serve as template for a se
 * User can add/edit/delete his/her profile pic
 * User can add as well as delete the pic(s) of their house
 * carousel images' size adjusted
+* destroy hosted images from cloudinary itself
+* handle cases for no images in house or user profile pic and also, the case when the default image itself is to be deleted 
 
 ## Future improvements
 * Enable deleting dp pics of user from cloudinary folder 
