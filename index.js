@@ -275,11 +275,14 @@ app.put('/user/:id/houses/:houseId', upload.array('image'), async (req, res) => 
             for (let filename of req.body.deleteImages) {
                 cloudinary.uploader.destroy(filename);
             }
-            await updHouse.updateOne({ $pull: { pics: { filename: { $in: req.body.deleteImages } } } });
-            if (updHouse.pics.length <= 1) {
+            if (updHouse.pics.length <= req.body.deleteImages.length){
                 updHouse.pics.push({ url: "https://res.cloudinary.com/dnkbv2p12/image/upload/v1619443374/rentApp/def_ekgruc.jpg", filename: "rentApp/def_ekgruc" });
             }
+            await updHouse.updateOne({ $pull: { pics: { filename: { $in: req.body.deleteImages } } } });
             console.log("After deleting images:", updHouse);
+        }
+        if (updHouse.pics.length==0){
+            updHouse.pics.push({ url: "https://res.cloudinary.com/dnkbv2p12/image/upload/v1619443374/rentApp/def_ekgruc.jpg", filename: "rentApp/def_ekgruc" });
         }
         await updHouse.save();
         res.redirect(`/user/${id}/houses`);
