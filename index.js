@@ -229,9 +229,10 @@ app.post('/login', passport.authenticate('local', { failureRedirect: '/login' })
 app.put('/del/:id', async (req, res) => {
     const { id } = req.params;
     const aUser = await User.findById(id);
-    cloudinary.uploader.destroy(aUser.profile.filename);
+    if(aUser.profile.filename!=="userDp/defU_jybgs8") cloudinary.uploader.destroy(aUser.profile.filename);    //  should not be destroyed always
+    console.log("Dp pic:",aUser.profile.filename);
     const { oname, oNo, oAddress, password, username } = aUser;
-    const profile = { url: "https://res.cloudinary.com/dnkbv2p12/image/upload/v1618080804/userDp/oy6iov22qrlvue1lxs72.png", filename: "userDp/oy6iov22qrlvue1lxs72" };
+    const profile = { url: "https://res.cloudinary.com/dnkbv2p12/image/upload/v1619582000/userDp/defU_jybgs8.jpg", filename: "userDp/defU_jybgs8" };
     const nUser = await User.findByIdAndUpdate(id, { oname, oNo, oAddress, password, username, profile });
     console.log(nUser);
     res.redirect(`/user/${id}`);
@@ -275,13 +276,13 @@ app.put('/user/:id/houses/:houseId', upload.array('image'), async (req, res) => 
             for (let filename of req.body.deleteImages) {
                 cloudinary.uploader.destroy(filename);
             }
-            if (updHouse.pics.length <= req.body.deleteImages.length){
+            if (updHouse.pics.length <= req.body.deleteImages.length) {
                 updHouse.pics.push({ url: "https://res.cloudinary.com/dnkbv2p12/image/upload/v1619443374/rentApp/def_ekgruc.jpg", filename: "rentApp/def_ekgruc" });
             }
             await updHouse.updateOne({ $pull: { pics: { filename: { $in: req.body.deleteImages } } } });
             console.log("After deleting images:", updHouse);
         }
-        if (updHouse.pics.length==0){
+        if (updHouse.pics.length == 0) {
             updHouse.pics.push({ url: "https://res.cloudinary.com/dnkbv2p12/image/upload/v1619443374/rentApp/def_ekgruc.jpg", filename: "rentApp/def_ekgruc" });
         }
         await updHouse.save();
@@ -309,6 +310,11 @@ app.delete('/user/:id', async (req, res) => {
 app.delete('/user/:id/houses/:houseId', async (req, res) => {
     if (req.isAuthenticated()) {
         const { houseId, id } = req.params;
+       //   for deleting pics associated with given house
+        const curHouse= await House.findById(houseId);
+        for (let pic of curHouse.pics){
+            cloudinary.uploader.destroy(pic.filename);
+        }
         //  delete this id from user.houses also to prevent error in future
         await User.findByIdAndUpdate(id, { $pull: { houses: houseId } });
         await House.findByIdAndDelete(houseId);
