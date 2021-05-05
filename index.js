@@ -155,7 +155,8 @@ app.get('/sell', (req, res) => {
     res.render('forms/regUser');   //  for people who want to sell a house on rent
 })
 
-app.get('/look', (req, res) => {
+app.get('/look', async (req, res) => {
+    const houses = await House.find({});
     res.render('info/houses', { houses });
 })
 
