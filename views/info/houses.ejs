@@ -34,6 +34,9 @@
                     </p>
                     <p class="card-text">Location:<%=house.location%>
                     </p>
+                    <form action="/ownerInf/<%=houses[it].owner._id%>">
+                        <button class="btn btn-info">Meet the owner</button>
+                    </form>
                     <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
                 </div>
             </div>

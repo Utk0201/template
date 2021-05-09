@@ -59,6 +59,7 @@ passport.use(new passportLocal(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 app.use((req, res, next) => {
+    // console.log("Assigned loginUser",req.user);
     res.locals.loginUser = req.user;  //  allows the variable loginUser to be accessible everywhere
     // console.log(`res.locals containes ${req.user}`);
     next();
@@ -139,7 +140,17 @@ app.get('/user/:id/houses', async (req, res) => {
 
 app.get('/user/:id', async (req, res) => {
     if (req.isAuthenticated()) {
+        // console.log("curUser is:",res.locals.loginUser);
+        // console.log("Try: ",req.user._id);
         const { id } = req.params;
+        if(req.user._id!=id){
+            console.log("Don't try to access others' data");
+            res.redirect(`/user/${req.user._id}`);
+            // console.log("Not allowed");
+        }
+        else{
+            console.log("allowed!");
+        }
         const curUser = await User.findById(id);
         // console.log(res.locals.loginUser+' is the current user');
         res.render('info/user', { curUser });
@@ -167,6 +178,14 @@ app.get('/secret', (req, res) => {
     else {
         res.redirect('/login');
     }
+})
+
+app.get('/ownerInf/:id',async (req,res)=>{
+    const {id} = req.params;
+    const curOwner= await User.findById(id);
+    // console.log(curOwner);
+    // res.send("good to go!");
+    res.render('info/ownerInfo',{curUser:curOwner});
 })
 /////////////////////////////////////////////get//////////////////////////////////////////////////
 
