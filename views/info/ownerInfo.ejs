@@ -1,15 +1,36 @@
 <% layout('layout/boiler') %>
 
-<div class="card mx-auto" style="width: 18rem;">
-    <img class="card-img-top" src=<%= curUser.profile.url?curUser.profile.url:"https://www.clipartkey.com/mpngs/m/152-1520367_user-profile-default-image-png-clipart-png-download.png"%> alt="failed to load">
-    <div class="mx-auto my-2">
-    </div>
-    <div class="card-body">
-      <p class="card-text">Name: <%= curUser.oname %> </p>
-      <p class="card-text">Contact number: <%= curUser.oNo %> </p>
-      <p class="card-text">Email id: <%= curUser.username %> </p>
-      <!-- <a class="btn btn-success" href="/addHouse" role="button">Add House</a>
-      <a class="btn btn-success" href="/addHouse" role="button">View All Houses</a> -->
-      <a href="/look" class="btn btn-primary">Go back</a>
-    </div>
-</div>
+  <table>
+    <tr>
+    <tr>
+      <td style="padding: 5em;">
+        <div id="map" style='width: 400px; height: 300px;'></div>
+      </td>
+      <td style="padding: 5em;">
+        <div class="card mx-auto" style="width: 18rem;">
+          <img class="card-img-top"
+            src=<%=curUser.profile.url?curUser.profile.url:"https://www.clipartkey.com/mpngs/m/152-1520367_user-profile-default-image-png-clipart-png-download.png"%>
+          alt="failed to load">
+          <div class="mx-auto my-2">
+          </div>
+          <div class="card-body">
+            <p class="card-text">Name: <%= curUser.oname %>
+            </p>
+            <p class="card-text">Contact number: <%= curUser.oNo %>
+            </p>
+            <p class="card-text">Email id: <%= curUser.username %>
+            </p>
+            <!-- <a class="btn btn-success" href="/addHouse" role="button">Add House</a>
+              <a class="btn btn-success" href="/addHouse" role="button">View All Houses</a> -->
+            <a href="/look" class="btn btn-primary">Go back</a>
+          </div>
+        </div>
+      </td>
+    </tr>
+  </table>
+  <script>
+    var mapToken = '<%-process.env.map_tok%>';  //  passing credentials to showMap.js
+    var houseObj = <%-JSON.stringify(curHouse)%>  //  passing credentials to showMap.js
+  </script>
+  <script src="/javascripts/showMap.js">
+  </script>

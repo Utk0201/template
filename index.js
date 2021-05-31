@@ -16,6 +16,7 @@ const House = require('./models/house.js');   //  schema of house
 const methodOverride = require('method-override');
 const multer = require('multer'); //  fills a method 'file' or 'files' in req.body after it has been initialized
 //  to initialize multer, we write the following line
+const userRoutes = require('./routes/user');
 const { storage, cloudinary } = require('./cloudinary/cloud');
 var upload = multer({ storage });
 
@@ -38,7 +39,9 @@ app.set('view engine', 'ejs')
 
 
 //setting up directory to serve static resources (ex- css)
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, 'public')))     // in my app, everywhere I use src="[some_link]" that 'some_link' will be relative to
+// the public directory due to the above line
+  
 // parse application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: false }))
 //  set up session before using passport
@@ -74,10 +77,6 @@ app.get('/home', (req, res) => {
     res.render('layout/index');
 })
 
-app.get('/user', (req, res) => {
-    res.render('forms/regUser');   //  for people who want to rent a house
-})
-
 app.get('/login', (req, res) => {
     res.render('forms/loginUser');
 })
@@ -94,74 +93,6 @@ app.get('/logout', (req, res) => {
     }
 })
 
-app.get('/user/:id/houses/:houseId', async (req, res) => {
-    if (req.isAuthenticated()) {
-        const { id, houseId } = req.params;
-        const curHouse = await House.findById(houseId);
-        res.render('forms/editHouse', { ownerId: id, curHouse });
-    }
-    else {
-        res.redirect('/login');
-    }
-})
-
-app.get('/user/:id/edit', (req, res) => {
-    // res.send(`At ${req.params.id}`);
-    if (req.isAuthenticated()) {
-        res.render('forms/editUser');   //  edit details of the user having this id
-    }
-    else {
-        res.redirect('/login');
-    }
-})
-
-app.get('/user/:id/add', (req, res) => {
-    if (req.isAuthenticated()) {
-        const ownerId = req.params.id;
-        console.log("Id of owner: ", ownerId);
-        res.render('forms/addHouse', { ownerId });
-    }
-    else {
-        res.redirect('/login');
-    }
-})
-
-app.get('/user/:id/houses', async (req, res) => {
-    if (req.isAuthenticated()) {
-        //  to access houses of a particular user, I need to send the user object
-        const curUser = await User.findById(req.params.id).populate('houses');
-        // res.send(curUser);
-        res.render('info/myHouses', { curUser });
-    }
-    else {
-        res.redirect('/login');
-    }
-})
-
-app.get('/user/:id', async (req, res) => {
-    if (req.isAuthenticated()) {
-        // console.log("curUser is:",res.locals.loginUser);
-        // console.log("Try: ",req.user._id);
-        const { id } = req.params;
-        if(req.user._id!=id){
-            console.log("Don't try to access others' data");
-            res.redirect(`/user/${req.user._id}`);
-            // console.log("Not allowed");
-        }
-        else{
-            console.log("allowed!");
-        }
-        const curUser = await User.findById(id);
-        // console.log(res.locals.loginUser+' is the current user');
-        res.render('info/user', { curUser });
-    }
-    else {
-        console.log('Please login first');
-        res.redirect('/login');
-    }
-    // res.send(curUser);
-})
-
 app.get('/sell', (req, res) => {
     res.render('forms/regUser');   //  for people who want to sell a house on rent
 })
@@ -171,21 +102,12 @@ app.get('/look', async (req, res) => {
     res.render('info/houses', { houses });
 })
 
-app.get('/secret', (req, res) => {
-    if (req.isAuthenticated()) {
-        res.send('Welcome to secret society of buyers');
-    }
-    else {
-        res.redirect('/login');
-    }
-})
-
-app.get('/ownerInf/:id',async (req,res)=>{
-    const {id} = req.params;
+app.get('/ownerInf/:id/:hId',async (req,res)=>{
+    const {id,hId} = req.params;
     const curOwner= await User.findById(id);
-    // console.log(curOwner);
+    const curHouse= await House.findById(hId);
     // res.send("good to go!");
-    res.render('info/ownerInfo',{curUser:curOwner});
+    res.render('info/ownerInfo',{curUser:curOwner,curHouse:curHouse});
 })
 /////////////////////////////////////////////get//////////////////////////////////////////////////
 
@@ -210,26 +132,6 @@ app.post('/sell', upload.single('img'), async (req, res, next) => {
 
     console.log(regUser);
     res.redirect('/home');
-});
-
-app.post('/user/:id/addHouse', upload.array('hImage'), async (req, res) => {
-    // res.send('wait');
-    // console.log(req.body);
-    console.log(req.files);
-    const { desc, categ, price, location } = req.body;
-    // res.send("Wait");
-    const pics = req.files.map(f => ({ url: f.path, filename: f.filename }));
-    const oId = req.params.id;
-    const aHouse = new House({ desc, categ, price, location });
-    aHouse.pics = pics;
-    aHouse.owner = oId;
-    const user = await User.findById(oId);
-    user.houses.push(aHouse._id);
-    await user.save();
-    await aHouse.save();
-    console.log(aHouse);
-    res.redirect(`/user/${user._id}/houses`);
-    // res.send(user);
 });
 
 // Passport provides an authenticate() function, which is used as route middleware to authenticate requests.
@@ -257,93 +159,7 @@ app.put('/del/:id', async (req, res) => {
     console.log(nUser);
     res.redirect(`/user/${id}`);
 });
-
-app.put('/user/:id', upload.single('img'), async (req, res) => {
-    // res.send('working atleast!!');
-    if (req.isAuthenticated()) {
-        const { id } = req.params;
-        const { oname, oNo, oAddress } = req.body;
-        const prevUser = await User.findById(id);
-        var profile;
-        if (req.file) profile = { url: req.file.path, filename: req.file.filename };
-        else profile = prevUser.profile;
-        const updUser = await User.findByIdAndUpdate(id, { oname, oNo, oAddress, profile });
-        res.redirect(`/user/${updUser._id}`);
-    }
-    else {
-        res.redirect('/login');
-    }
-});
-
-app.put('/user/:id/houses/:houseId', upload.array('image'), async (req, res) => {
-    if (req.isAuthenticated()) {
-        const { categ, price, location, desc } = req.body;
-        const { houseId, id } = req.params;
-        const updHouse = await House.findByIdAndUpdate(houseId, { categ, price, location, desc });
-        console.log(updHouse);
-        // updHouse.pics.push(req.files.map(f=>({url:f.path,filename:f.filename})));  
-        //  if we run above line, then we're pushing an entire array in 'pics'
-        //  but the type of 'pics' is 'object' and not 'array' as specified in the model
-        //  So, instead of pushing that array, we extract its object using spread operator '...'
-        const addedImages = req.files.map(f => ({ url: f.path, filename: f.filename }));
-        if (updHouse.pics.length && updHouse.pics[0].filename === "rentApp/def_ekgruc") {
-            updHouse.pics.pop();
-        }
-        updHouse.pics.push(...addedImages); //   
-        // await updHouse.save();  //  save above changes
-        //delete images
-        if (req.body.deleteImages) {
-            for (let filename of req.body.deleteImages) {
-                cloudinary.uploader.destroy(filename);
-            }
-            if (updHouse.pics.length <= req.body.deleteImages.length) {
-                updHouse.pics.push({ url: "https://res.cloudinary.com/dnkbv2p12/image/upload/v1619443374/rentApp/def_ekgruc.jpg", filename: "rentApp/def_ekgruc" });
-            }
-            await updHouse.updateOne({ $pull: { pics: { filename: { $in: req.body.deleteImages } } } });
-            console.log("After deleting images:", updHouse);
-        }
-        if (updHouse.pics.length == 0) {
-            updHouse.pics.push({ url: "https://res.cloudinary.com/dnkbv2p12/image/upload/v1619443374/rentApp/def_ekgruc.jpg", filename: "rentApp/def_ekgruc" });
-        }
-        await updHouse.save();
-        res.redirect(`/user/${id}/houses`);
-    }
-    else {
-        res.redirect('/login');
-    }
-})
-/////////////////////////////////////////////put//////////////////////////////////////////////////
-
-/////////////////////////////////////////////delete//////////////////////////////////////////////////
-app.delete('/user/:id', async (req, res) => {
-    if (req.isAuthenticated()) {
-        const { id } = req.params;
-        await User.findByIdAndDelete(id);
-        res.redirect('/home');
-    }
-    else {
-        res.redirect('/login');
-    }
-})
-
-
-app.delete('/user/:id/houses/:houseId', async (req, res) => {
-    if (req.isAuthenticated()) {
-        const { houseId, id } = req.params;
-       //   for deleting pics associated with given house
-        const curHouse= await House.findById(houseId);
-        for (let pic of curHouse.pics){
-            cloudinary.uploader.destroy(pic.filename);
-        }
-        //  delete this id from user.houses also to prevent error in future
-        await User.findByIdAndUpdate(id, { $pull: { houses: houseId } });
-        await House.findByIdAndDelete(houseId);
-        res.redirect(`/user/${id}/houses`);
-    }
-    else {
-        res.redirect('/login');
-    }
-})
+app.use('/user',userRoutes);
 
 /////////////////////////////////////////////delete//////////////////////////////////////////////////
 app.get('/', (req, res) => {
