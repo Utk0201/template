@@ -12,9 +12,10 @@ This template is currently under development. It will serve as template for a se
 * carousel images' size adjusted
 * destroy hosted images from cloudinary itself (done for user dp and house pics)
 * handle cases for no images in house or user profile pic and also, the case when the default image itself is to be deleted 
+* Enabled map in `ownerInfo` page
 
 ## Future improvements
 * Refractoring code
 * Improving user interface
-* Showing location of the rented house on map 
+* Provide marking exact location of the house to the user
 * Video chat functionality between user-buyer
